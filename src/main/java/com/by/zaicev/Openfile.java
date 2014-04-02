@@ -22,9 +22,8 @@ import java.io.IOException;
  */
 public class Openfile {
 
-    public static int[] chars;
-
-    public static void read() throws IOException{
+    public static int[] read() throws IOException{
+        int[] chars = null;
         String filename = "D:/10mb.bin";
 
         try {
@@ -35,8 +34,9 @@ public class Openfile {
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
             int  line;
+            int i=0;
             while ((line = br.read()) != -1) {
-                chars[line] = br.read();
+                chars[i++] = line;
 
 
             }
@@ -47,7 +47,7 @@ public class Openfile {
             System.out.print("Файл не найден!");
             e.printStackTrace();
         }
-
+    return chars;
     }
 }
 

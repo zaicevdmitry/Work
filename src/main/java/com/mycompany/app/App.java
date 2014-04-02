@@ -69,7 +69,8 @@ public class App
 	    public static void SortMass(){
 	        Integer[] mass = new Integer[] {23, 65, 105, 1, 23, 65, 78, 98, 32, 45, 66};
 	        //Collections.reverseOrder()
-	        Arrays.sort(mass);
+//	        Arrays.sort(mass);
+            Arrays.sort(mass,Collections.reverseOrder());
             System.out.println("Отсортированный массив:");
 	        for(int r : mass)
 	            System.out.println(r);

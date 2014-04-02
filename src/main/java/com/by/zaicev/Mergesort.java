@@ -18,14 +18,10 @@ public class Mergesort extends Openfile {
 
 
 
-    static int middle;
-   static int[] left;
-   static int[] right;
-
-    public static int[] Sort(int[] chars) {
-        middle = chars.length / 2;
-        left = new int[middle];
-        right = new int[chars.length - middle];
+    public int[] Sort(int[] chars) {
+        int middle = chars.length / 2;
+        int[] left = new int[middle];
+        int[] right = new int[chars.length - middle];
         if (chars.length == 1)
             return chars;
 
@@ -40,9 +36,8 @@ public class Mergesort extends Openfile {
         return Merge(Sort(left), Sort(right));
     }
 
-    static int[] result;
-    public static int[] Merge(int[] left, int[] right) {
-        result  = new int[left.length + right.length];
+    public int[] Merge(int[] left, int[] right) {
+        int[] result  = new int[left.length + right.length];
 
         int i = 0, j = 0, k = 0;
 
@@ -72,11 +67,14 @@ public class Mergesort extends Openfile {
 
 
     public static void main(String[] args) throws IOException {
-        Openfile.read();
-        //Sort(chars);
-       // Merge(left,right);
-       // System.out.println("Результат:" + result);
-
+        Mergesort mergesort = new Mergesort();
+        int[] chars = Openfile.read();
+        int[] result =  mergesort.Sort(chars);
+        String res = "";
+        for(int i=0; i<result.length; i++){
+            res += result[i];
+        }
+        System.out.println("Результат:" + res);
     }
 
 
