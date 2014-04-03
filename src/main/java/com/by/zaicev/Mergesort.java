@@ -1,11 +1,10 @@
 package com.by.zaicev;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,68 +13,118 @@ import java.nio.channels.FileChannel;
  * Time: 17:16
  * To change this template use File | Settings | File Templates.
  */
-public class Mergesort extends Openfile {
+public class Mergesort extends RecursiveTask {
+    protected List<Byte> data = new ArrayList<Byte>();
 
+    public List<Byte> sorting(List<Byte> dataSort) {
+        int listSize = dataSort.size();
 
+        // если массив меньше единицы, то возвращем его как есть
+        if (listSize <= 1) {
+            return dataSort;
+        } else {
+            // Если не то делим на 2
+            int middlelist = listSize / 2;
 
-    public int[] Sort(int[] chars) {
-        int middle = chars.length / 2;
-        int[] left = new int[middle];
-        int[] right = new int[chars.length - middle];
-        if (chars.length == 1)
-            return chars;
+            return mergelist(
+                    sorting(dataSort.subList(0, middlelist)),
+                    sorting(dataSort.subList(middlelist, listSize))
+            );
 
-        for (int i = 0; i < chars.length; i++) {
-            if (i < middle) {
-                left[i] = chars[i];
-            } else {
-                right[i - middle] = chars[i];
-            }
         }
 
-        return Merge(Sort(left), Sort(right));
     }
 
-    public int[] Merge(int[] left, int[] right) {
-        int[] result  = new int[left.length + right.length];
+    public void setData(final List<Byte> pData) {
+        data = pData;
+    }
 
-        int i = 0, j = 0, k = 0;
+    // здесь надо смержить два отсортированных массива
+    private List<Byte> mergelist(List<Byte> firstListMerge, List<Byte> secondListMerge) {
 
-        while (k < result.length) {
-            if (i == left.length) {
-                result[k] = right[j];
-                j++;
-            } else if (j == right.length) {
-                result[k] = left[i];
-                i++;
-            } else {
-                if (left[i] < right[j]) {
-                    result[k] = left[i];
-                    i++;
+        //        обявление массива результирующего массива
+        List<Byte> resultList = new ArrayList<Byte>();
+        //        дновременно проходим оба входных масиива
+        //        Храним текущий элемент каждого массива
+        int firstIndexSort = 0;
+        int secondIndexSort = 0;
+
+        Byte firstIndex = firstListMerge.get(firstIndexSort);
+        Byte secondfIndex = secondListMerge.get(secondIndexSort);
+
+        int mergeSize = firstListMerge.size();
+
+
+        for (int i = 0; i < mergeSize; i++) {
+            //        1 сравниваем эти два элемента между собой
+            if (firstIndexSort < firstListMerge.size() && secondIndexSort < secondListMerge.size()) {
+                if (firstIndex < secondfIndex) {
+                    //меньший из них записываем в результат
+                    //Берем следующий элемент массива  вместо того которого мы записали в результат
+                    resultList.add(firstListMerge.get(firstIndex++));
                 } else {
-                    result[k] = right[j];
-                    j++;
+                    resultList.add(secondListMerge.get(secondfIndex++));
                 }
+                //            переходим на 1 до тех пор пока в одном из масивов не закончатся элементы
+            } else if (firstIndex < firstListMerge.size()) {
+                //определяем в каком массиве остались элементы
+                //С этого массыва все оставшиеся элементы записываем в результат
+                resultList.add(firstListMerge.get(firstIndex++));
+            } else if (secondfIndex < secondListMerge.size()) {
+                resultList.add(secondListMerge.get(secondfIndex++));
             }
-
-            k++;
         }
-
-        return result;
+//        int indexmass= 0;
+//        while(indexmass < mergeSize){
+//            indexmass++;
+//            if (firstIndexSort < firstListMerge.size() && secondIndexSort < secondListMerge.size()) {
+//                if (firstIndex < secondfIndex) {
+//                    //меньший из них записываем в результат
+//                    //Берем следующий элемент массива  вместо того которого мы записали в результат
+//                    resultList.add(firstListMerge.get(firstIndex++));
+//                } else {
+//                    resultList.add(secondListMerge.get(secondfIndex++));
+//                }
+//            }
+//            //        вернуть результат
+        return resultList;
     }
 
 
+    protected Object compute() {
 
-    public static void main(String[] args) throws IOException {
-        Mergesort mergesort = new Mergesort();
-        int[] chars = Openfile.read();
-        int[] result =  mergesort.Sort(chars);
-        String res = "";
-        for(int i=0; i<result.length; i++){
-            res += result[i];
+        int hresholdMemory = 4096;
+        int dataSize = data.size();
+
+        //        если мы достигли порогового значения
+        if (dataSize < hresholdMemory) {
+            //            то выполняем сортировку своей части
+            return sorting(data);
+        } else {
+            //            в противном случае продолжаем разбивать
+            Mergesort subTask0 = new Mergesort();
+            Mergesort subTask1 = new Mergesort();
+
+            int middleIndex = dataSize / 2;
+
+            subTask0.setData(data.subList(0, middleIndex));
+            subTask1.setData(data.subList(middleIndex, dataSize));
+
+            //            запускаем подзадачи
+            subTask0.fork();
+            subTask1.fork();
+
+            //            получаем результат подзадач
+            List<Byte> result0 = (List<Byte>) subTask0.join();
+            List<Byte> result1 = (List<Byte>) subTask1.join();
+
+            //            объединяем с сортировкой результат подзадач и возвращаем его головной задаче
+            return mergelist(result0, result1);
         }
-        System.out.println("Результат:" + res);
     }
-
-
 }
+
+
+
+
+
