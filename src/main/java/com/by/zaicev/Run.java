@@ -14,7 +14,6 @@ public class Run {
     public static void main(String[] args) throws IOException{
             Openfile mainTask = new Openfile();
             ForkJoinPool pool = new ForkJoinPool();
-            mainTask.readfile();
             pool.invoke(mainTask);
     }
 }

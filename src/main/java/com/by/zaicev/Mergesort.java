@@ -14,76 +14,77 @@ import java.util.concurrent.RecursiveTask;
  * To change this template use File | Settings | File Templates.
  */
 public class Mergesort extends RecursiveTask {
-    protected List<Byte> data = new ArrayList<Byte>();
+    protected List<Integer> data = new ArrayList<Integer>();
 
-    public List<Byte> sorting(List<Byte> dataSort) {
+    public List<Integer> sorting(List<Integer> dataSort) {
+        List<Integer> result;
+
         int listSize = dataSort.size();
 
         // если массив меньше единицы, то возвращем его как есть
         if (listSize <= 1) {
-            return dataSort;
+            result = dataSort;
         } else {
             // Если не то делим на 2
             int middlelist = listSize / 2;
 
-            return mergelist(
-                    sorting(dataSort.subList(0, middlelist)),
-                    sorting(dataSort.subList(middlelist, listSize))
-            );
+            List<Integer> firstSublist = dataSort.subList(0, middlelist);
+            List<Integer> secondSublist = dataSort.subList(middlelist, listSize);
 
+            List<Integer> firstSortedSublist = sorting(firstSublist);
+            List<Integer> secondSortedSublist = sorting(secondSublist);
+
+            result = mergelist(firstSortedSublist, secondSortedSublist);
         }
 
+        return result;
     }
 
-    public void setData(final List<Byte> pData) {
+    public void setData(final List<Integer> pData) {
         data = pData;
     }
 
     // здесь надо смержить два отсортированных массива
-    private List<Byte> mergelist(List<Byte> firstListMerge, List<Byte> secondListMerge) {
+    private List<Integer> mergelist(List<Integer> firstListMerge, List<Integer> secondListMerge) {
 
         //        обявление массива результирующего массива
-        List<Byte> resultList = new ArrayList<Byte>();
+        List<Integer> resultList = new ArrayList<Integer>();
         //        дновременно проходим оба входных масиива
         //        Храним текущий элемент каждого массива
-        int firstIndexSort = 0;
-        int secondIndexSort = 0;
-
-        Byte firstIndex = firstListMerge.get(firstIndexSort);
-        Byte secondfIndex = secondListMerge.get(secondIndexSort);
+        int firstArrayIndex = 0;
+        int secondArrayIndex = 0;
 
         int mergeSize = firstListMerge.size();
 
-
         for (int i = 0; i < mergeSize; i++) {
             //        1 сравниваем эти два элемента между собой
-            if (firstIndexSort < firstListMerge.size() && secondIndexSort < secondListMerge.size()) {
-                if (firstIndex < secondfIndex) {
+            if (firstArrayIndex < firstListMerge.size() && secondArrayIndex < secondListMerge.size()) {
+                if ( firstListMerge.get(firstArrayIndex) <  secondListMerge.get(secondArrayIndex)) {
                     //меньший из них записываем в результат
                     //Берем следующий элемент массива  вместо того которого мы записали в результат
-                    resultList.add(firstListMerge.get(firstIndex++));
+                    resultList.add(firstListMerge.get(firstArrayIndex++));
                 } else {
-                    resultList.add(secondListMerge.get(secondfIndex++));
+                    resultList.add(secondListMerge.get(secondArrayIndex++));
                 }
                 //            переходим на 1 до тех пор пока в одном из масивов не закончатся элементы
-            } else if (firstIndex < firstListMerge.size()) {
+            } else if (firstArrayIndex < firstListMerge.size()) {
                 //определяем в каком массиве остались элементы
                 //С этого массыва все оставшиеся элементы записываем в результат
-                resultList.add(firstListMerge.get(firstIndex++));
-            } else if (secondfIndex < secondListMerge.size()) {
-                resultList.add(secondListMerge.get(secondfIndex++));
+                resultList.add(firstListMerge.get(firstArrayIndex++));
+            } else if (secondArrayIndex < secondListMerge.size()) {
+                resultList.add(secondListMerge.get(secondArrayIndex++));
             }
         }
 //        int indexmass= 0;
 //        while(indexmass < mergeSize){
 //            indexmass++;
-//            if (firstIndexSort < firstListMerge.size() && secondIndexSort < secondListMerge.size()) {
-//                if (firstIndex < secondfIndex) {
+//            if (firstArryElement < firstListMerge.size() && secondArryElement < secondListMerge.size()) {
+//                if (firstArryIndex < secondArryIndex) {
 //                    //меньший из них записываем в результат
 //                    //Берем следующий элемент массива  вместо того которого мы записали в результат
-//                    resultList.add(firstListMerge.get(firstIndex++));
+//                    resultList.add(firstListMerge.get(firstArryIndex++));
 //                } else {
-//                    resultList.add(secondListMerge.get(secondfIndex++));
+//                    resultList.add(secondListMerge.get(secondArryIndex++));
 //                }
 //            }
 //            //        вернуть результат
@@ -115,8 +116,8 @@ public class Mergesort extends RecursiveTask {
             subTask1.fork();
 
             //            получаем результат подзадач
-            List<Byte> result0 = (List<Byte>) subTask0.join();
-            List<Byte> result1 = (List<Byte>) subTask1.join();
+            List<Integer> result0 = (List<Integer>) subTask0.join();
+            List<Integer> result1 = (List<Integer>) subTask1.join();
 
             //            объединяем с сортировкой результат подзадач и возвращаем его головной задаче
             return mergelist(result0, result1);

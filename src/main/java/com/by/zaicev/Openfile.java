@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 
 import static java.util.concurrent.ForkJoinTask.invokeAll;
@@ -25,7 +26,7 @@ import static java.util.concurrent.ForkJoinTask.invokeAll;
  * Time: 17:21
  * To change this template use File | Settings | File Templates.
  */
-public class Openfile extends ForkJoinTask<Object> {
+public class Openfile extends RecursiveAction {
     protected  String mainFile;
     protected  String tempFile1;
     protected  String tempFile2;
@@ -37,7 +38,7 @@ public class Openfile extends ForkJoinTask<Object> {
 
     public void readfile() throws IOException{
         // путь к файлу
-        mainFile = "D:/10mb.bin";
+        mainFile = "D://test.txt";
 
         if (mainFile.isEmpty()){
             System.out.print("File is empty!");
@@ -45,31 +46,31 @@ public class Openfile extends ForkJoinTask<Object> {
         }
 
         try {
-            DataInputStream file = new DataInputStream(new FileInputStream(new File(mainFile)));
+            FileInputStream file = new FileInputStream(new File(mainFile));
             // количество байт доступных для чтения
             int availableSize = file.available();
             // выводим в консоль количество байт доступных для чтения
             System.out.println("Size:" + availableSize);
             int sizeMass=10485801;
             if (availableSize < sizeMass){
-            //  считываем данные из файла и запихиваем их в лист
-                ArrayList<Byte> data= new ArrayList<Byte>();
+                //  считываем данные из файла и запихиваем их в лист
+                ArrayList<Integer> data= new ArrayList<Integer>();
 
                 for(int i=0; i<availableSize; i++){
-                    data.add(file.readByte());
+                    data.add(file.read());
                 }
                 file.close();
                 Mergesort task = new Mergesort();
                 task.setData(data);
                 task.fork();
                 //                получаем отсортированный массив
-                List<Byte> sort = (List<Byte>) task.join();
+                List<Integer> sort = (List<Integer>) task.join();
 //                открываем главный файл для записи
 
-                DataOutputStream mainResult = new DataOutputStream((new FileOutputStream((new File(mainFile)))));
+                FileOutputStream mainResult = new FileOutputStream((new File(mainFile)));
 
 //                записываем в него отсортированный массив
-                for (Byte aSort : sort) {
+                for (Integer aSort : sort) {
                     mainResult.write(aSort);
                 }
 
@@ -85,11 +86,11 @@ public class Openfile extends ForkJoinTask<Object> {
 
 
 //            открываем temp для записи
-            DataOutputStream tempFileWrite0 = new DataOutputStream((new FileOutputStream((new File(tempFile1)))));
-            DataOutputStream tempFileWrite1 = new DataOutputStream((new FileOutputStream((new File(tempFile2)))));
+            FileOutputStream tempFileWrite0 = new FileOutputStream((new File(tempFile1)));
+            FileOutputStream tempFileWrite1 = new FileOutputStream((new File(tempFile2)));
 
             while (availableSize > 0) {
-             int listSize = availableSize;
+                int listSize = availableSize;
 
 //                находим середину
                 int middleToRead = listSize / 2;
@@ -128,15 +129,15 @@ public class Openfile extends ForkJoinTask<Object> {
             merge();
         } catch (FileNotFoundException e) {
             System.out.print("File not found!" + e.getMessage());
-           }
+        }
     }
     protected void merge() throws IOException {
 
 
 //        файлы
-        DataInputStream  temp1File = new DataInputStream(new FileInputStream(new File(tempFile1)));
-        DataInputStream  temp2File = new DataInputStream(new FileInputStream(new File(tempFile2)));
-        DataOutputStream  resultFile = new DataOutputStream((new FileOutputStream(new File(mainFile))));
+        FileInputStream  temp1File = new FileInputStream(new File(tempFile1));
+        FileInputStream  temp2File = new FileInputStream(new File(tempFile2));
+        FileOutputStream  resultFile = new FileOutputStream(new File(mainFile));
 
 
 
@@ -195,18 +196,12 @@ public class Openfile extends ForkJoinTask<Object> {
 
 
     @Override
-    public Object getRawResult() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void setRawResult(Object value) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected boolean exec() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    protected void compute() {
+        try {
+            readfile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
