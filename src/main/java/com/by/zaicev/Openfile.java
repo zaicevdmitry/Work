@@ -38,7 +38,7 @@ public class Openfile extends RecursiveAction {
 
     public void readfile() throws IOException{
         // путь к файлу
-        mainFile = "D://test.txt";
+        mainFile = "D://1.txt";
 
         if (mainFile.isEmpty()){
             System.out.print("File is empty!");

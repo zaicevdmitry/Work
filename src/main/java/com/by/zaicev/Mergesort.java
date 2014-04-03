@@ -48,14 +48,14 @@ public class Mergesort extends RecursiveTask {
     private List<Integer> mergelist(List<Integer> firstListMerge, List<Integer> secondListMerge) {
 
         //        обявление массива результирующего массива
-        List<Integer> resultList = new ArrayList<Integer>();
+
         //        дновременно проходим оба входных масиива
         //        Храним текущий элемент каждого массива
         int firstArrayIndex = 0;
         int secondArrayIndex = 0;
 
-        int mergeSize = firstListMerge.size();
-
+        int mergeSize = firstListMerge.size() + secondListMerge.size();
+        List<Integer> resultList = new ArrayList<Integer>(mergeSize);
         for (int i = 0; i < mergeSize; i++) {
             //        1 сравниваем эти два элемента между собой
             if (firstArrayIndex < firstListMerge.size() && secondArrayIndex < secondListMerge.size()) {
