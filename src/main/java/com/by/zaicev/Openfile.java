@@ -51,8 +51,8 @@ public class Openfile extends RecursiveAction {
             int availableSize = file.available();
             // выводим в консоль количество байт доступных для чтения
             System.out.println("Size:" + availableSize);
-            int sizeMass=10485801;
-            if (availableSize < sizeMass){
+            int sizeMass = availableSize + 1;
+            if (availableSize <= sizeMass){
                 //  считываем данные из файла и запихиваем их в лист
                 ArrayList<Integer> data= new ArrayList<Integer>();
 
